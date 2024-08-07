@@ -1,0 +1,95 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+db.sqlite3
+
+# If you are using SQLite database files
+*.sqlite3
+
+# If you are using PostgreSQL database files
+*.pgsql
+
+# If you are using MySQL database files
+*.myd
+*.myi
+*.err
+*.ibd
+
+# Django migrations
+*/migrations/*
+
+# If you are using Django static files
+/static/
+/staticfiles/
+/media/
+
+# Ignore the 'local_settings.py' file if it exists
+local_settings.py
+
+# Ignore the '.env' file if it exists
+.env
+
+# Ignore node_modules for JavaScript dependencies
+node_modules/
+
+# Ignore packages
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Translations
+*.mo
+
+# Django secret key and sensitive settings
+secret_key.txt
+settings_secret.py
+
+# Docker files
+*.env
+.dockerignore
+Dockerfile
+docker-compose.yml
+docker-compose.override.yml
+env
+env/
+# VS Code settings
+.vscode/
+
+# PyCharm settings
+.idea/
+
+# macOS specific files
+.DS_Store
+
+# Windows specific files
+Thumbs.db

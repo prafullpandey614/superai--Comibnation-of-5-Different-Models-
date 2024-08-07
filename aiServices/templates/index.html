@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperAI Services</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        .chatbot-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            overflow: hidden;
+            position: relative;
+        }
+        .dropdown {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .input-field {
+            width: 100%;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            padding-left: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .submit-button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .submit-button:hover {
+            background-color: #0056b3;
+        }
+        .output-area {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            min-height: 100px;
+        }
+        .loader {
+            margin-top: 40px;
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #031f31;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 2s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="chatbot-container">
+        <form id="chatbot-form">
+            {% csrf_token %}
+            <select name="service" id="service-type" class="dropdown">
+                <option value="replicate">Image Generator (Replicate)</option>
+                <option value="stable_diffusion">Image Generator (Stable Diffusion)</option>
+                <option value="hugging_face">Text-Generation (Hugging Face)</option>
+                <option value="chatbot">Chatbot (Claude)</option>
+                <option value="zeroGPT">Ai Detector (ZeroGPT)</option>
+            </select>
+            <input type="text" name="prompt" id="prompt" class="input-field" placeholder="Enter your prompt here" required>
+            <button type="submit" class="submit-button">Submit</button>
+        </form>
+        <div>
+        <div class="loader" id="loader">  </div>
+
+        </div>
+
+        <div id="output-area" class="output-area">
+
+            {% if output %}
+                <p>{{ output }}</p>
+            {% else %}
+                <p>Your Output Will be Visible Here ! </p>
+            {% endif %}
+        </div>
+    </div>
+    <script>
+        document.getElementById('chatbot-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const loader = document.getElementById('loader');
+            const outputArea = document.getElementById('output-area');
+            const prompt = document.getElementById('prompt').value;
+            const serviceType = document.getElementById('service-type').value;
+            
+            // Show the loader and clear the output area
+            loader.style.display = 'block';
+            outputArea.innerHTML = '';
+
+            fetch('{% url "chatbot_api" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    prompt: prompt,
+                    service_type: serviceType
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                loader.style.display = 'none';
+                if (data.message === 'Success') {
+                    if (serviceType === 'replicate' || serviceType === 'stable_diffusion') {
+                        outputArea.innerHTML = `<img src="${data.data}" alt="Generated Image" style="max-width: 100%;">`;
+                    } 
+                    else if(serviceType === 'zeroGPT'){
+                        outputArea.innerHTML = `Fake Percentage : <p>${data.data.data.fakePercentage}</p> <br> AI Words : <p>${data.data.data.aiWords}</p> `;
+                    }
+                    else {
+                        outputArea.innerHTML = `<p>${data.data}</p>`;
+                    }
+                } else {
+                    outputArea.innerHTML = `<p>Error: Something Went Wrong with the Prompt or the Model Credits! Please try again</p>`;
+                }
+            })
+            .catch(error => {
+                loader.style.display = 'none';
+                console.error('Error:', error);
+                outputArea.innerHTML = `<p>Error: Something Went Wrong with the Prompt or the Model! Please try again</p>`;
+            });
+        });
+    </script>
+</body>
+</html>
